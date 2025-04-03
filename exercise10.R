@@ -80,16 +80,16 @@ d <- d |>
     geom_boxplot())
 m4 <- lm(relative.beak.length ~ Primary.Lifestyle, data = d)
 summary(m4)
-m5 <- lm(relative.beak.length ~ Trophic.Niche, data = d)
+m5 <- lm(relative.beak.length ~ Trophic.Level, data = d)
 summary(m5)
 #step five
-m6 <- lm(d$relative.beak.length ~ d$Primary.Lifestyle + d$Trophic.Niche)
+m6 <- lm(d$relative.beak.length ~ d$Primary.Lifestyle + d$Trophic.Level)
 summary(m6)
 #step six
 m7 <- lm(relative.beak.length ~ Primary.Lifestyle + Trophic.Niche + Primary.Lifestyle:Trophic.Niche, data = d)
 summary(m7)
 #step seven
-interaction.plot(x.factor = d$Trophic.Niche, xlab = "Trophic Niche", trace.factor = d$Primary.Lifestyle, trace.label = "Primary Lifestyle",
+interaction.plot(x.factor = d$Primary.Lifestyle, xlab = "Primary Lifestyle", trace.factor = d$Trophic.Level, trace.label = "Trophic Level",
                  response = d$relative.beak.length, fun = base::mean, ylab = "Relative Beak Length")
 #step eight
 

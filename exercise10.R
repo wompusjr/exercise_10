@@ -1,11 +1,12 @@
 library(tidyverse)
 library(mosaic)
 #####
-#step one
 d <- read_csv("https://raw.githubusercontent.com/difiore/ada-datasets/refs/heads/main/AVONETdataset1.csv", col_names = TRUE)
 d <- d |>
-  select(Species1,Family1, Order1, Beak.Width, Beak.Depth, Tarsus.Length, Wing.Length, Tail.Length, Mass, Habitat, Migration, Trophic.Level,Trophic.Niche,Min.Latitude,Max.Latitude,Centroid.Latitude,Range.Size) |>
+  select(Species1,Family1, Order1, Beak.Width, Beak.Depth, Beak.Length_Culmen, Tarsus.Length, Wing.Length, Tail.Length, Mass, Habitat, Migration, Trophic.Level,Trophic.Niche, Primary.Lifestyle, Min.Latitude,Max.Latitude,Centroid.Latitude,Range.Size) 
   mutate(Migration = as.factor(Migration)) #winnowing the dataset and changing migration into a factor
+skim(d)
+#step one
 (p1 <- ggplot(data = d |> drop_na(Trophic.Level),
               aes(x = Trophic.Level, y = log(Mass))) +
     geom_boxplot())#boxplot for log(Mass) by trophic level
@@ -75,8 +76,8 @@ d <- d |>
 (p03<- ggplot(data = d |> drop_na(Primary.Lifestyle),
               aes(x = Primary.Lifestyle, y = relative.beak.length)) +
     geom_boxplot()) 
-(p04 <- ggplot(data = d |> drop_na(Trophic.Niche),
-               aes(x = Trophic.Niche, y = relative.beak.length)) +
+(p04 <- ggplot(data = d |> drop_na(Trophic.Level),
+               aes(x = Trophic.Level, y = relative.beak.length)) +
     geom_boxplot())
 m4 <- lm(relative.beak.length ~ Primary.Lifestyle, data = d)
 summary(m4) #very significant [<2e-16]

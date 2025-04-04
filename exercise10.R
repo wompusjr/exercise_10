@@ -79,17 +79,47 @@ d <- d |>
                aes(x = Trophic.Niche, y = relative.beak.length)) +
     geom_boxplot())
 m4 <- lm(relative.beak.length ~ Primary.Lifestyle, data = d)
-summary(m4)
+summary(m4) #very significant [<2e-16]
 m5 <- lm(relative.beak.length ~ Trophic.Level, data = d)
-summary(m5)
+summary(m5) ##very significant [<2e-16]
 #step five
-m6 <- lm(d$relative.beak.length ~ d$Primary.Lifestyle + d$Trophic.Level)
-summary(m6)
+m6 <- aov(d$relative.beak.length ~ d$Primary.Lifestyle + d$Trophic.Level) #switched to AOV to better illustrate general trends between the variables instead of the individual classifications in each variable
+summary(m6) #it looks like trophic level does effect beak length when lifestyle is taken into account [<2e-16] and vice versa [<2e-16]
 #step six
-m7 <- lm(relative.beak.length ~ Primary.Lifestyle + Trophic.Niche + Primary.Lifestyle:Trophic.Niche, data = d)
-summary(m7)
+m7 <- aov(relative.beak.length ~ Primary.Lifestyle + Trophic.Level + Primary.Lifestyle:Trophic.Level, data = d)
+summary(m7) #there appears to be strong interaction between a bird's lifestyle and it's trophic level.
 #step seven
 interaction.plot(x.factor = d$Primary.Lifestyle, xlab = "Primary Lifestyle", trace.factor = d$Trophic.Level, trace.label = "Trophic Level",
                  response = d$relative.beak.length, fun = base::mean, ylab = "Relative Beak Length")
 #step eight
-
+##looking at m4
+PL <- d |>
+  group_by(Primary.Lifestyle) |>
+  summarize(sdlength = sd(relative.beak.length))
+max(PL$sdlength)/min(PL$sdlength) #checking beak length for equal variance = all good (1.23)
+par(mfrow = c(1, 2))
+hist(d$relative.beak.length[d$Primary.Lifestyle == "Aerial"], main = "Aerial", xlab = "Relative Beak Length")
+qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Aerial"]) #not normally distributed
+par(mfrow = c(1, 2))
+hist(d$relative.beak.length[d$Primary.Lifestyle == "Generalist"], main = "Generalist", xlab = "Relative Beak Length")
+qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Generalist"]) #mostly normal but a little skewed
+par(mfrow = c(1, 2))
+hist(d$relative.beak.length[d$Primary.Lifestyle == "Insessorial"], main = "Insessorial", xlab = "Relative Beak Length")
+qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Insessorial"]) #pretty normal
+par(mfrow = c(1, 2))
+hist(d$relative.beak.length[d$Primary.Lifestyle == "Terrestrial"], main = "Terrestrial", xlab = "Relative Beak Length")
+qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Terrestrial"]) #mostly normal
+##looking at m5
+TL <- d |>
+  group_by(Trophic.Level) |>
+  summarize(sdlength = sd(relative.beak.length))
+max(TL$sdlength)/min(TL$sdlength) #checking beak length for equal variance = all good (1.33)
+par(mfrow = c(1, 2))
+hist(d$relative.beak.length[d$Trophic.Level == "Carnivore"], main = "Carnivore", xlab = "Relative Beak Length")
+qqnorm(d$relative.beak.length[d$Trophic.Level == "Carnivore"]) #largely normally distributed
+par(mfrow = c(1, 2))
+hist(d$relative.beak.length[d$Trophic.Level == "Omnivore"], main = "Omnivore", xlab = "Relative Beak Length")
+qqnorm(d$relative.beak.length[d$Trophic.Level == "Omnivore"]) #mostly normal
+par(mfrow = c(1, 2))
+hist(d$relative.beak.length[d$Trophic.Level == "Herbivore"], main = "Herbivore", xlab = "Relative Beak Length")
+qqnorm(d$relative.beak.length[d$Trophic.Level == "Herbivore"]) #pretty normal with a little right skew

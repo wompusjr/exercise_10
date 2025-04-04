@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>exercise_10</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="exercise_10_files/libs/clipboard/clipboard.min.js"></script>
+<script src="exercise_10_files/libs/quarto-html/quarto.js"></script>
+<script src="exercise_10_files/libs/quarto-html/popper.min.js"></script>
+<script src="exercise_10_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="exercise_10_files/libs/quarto-html/anchor.min.js"></script>
+<link href="exercise_10_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="exercise_10_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="exercise_10_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="exercise_10_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="exercise_10_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">exercise_10</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="challenge-one" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-one">Challenge One</h2>
+<p>Prior to starting this challenge, I loaded in the data set, winnowed it to the variables outlined in the text, and did some preliminary analysis with <code>skim()</code>. I found that <strong>Species1, Family1, Order1, Habitat, Trophic.Level,</strong> and <strong>Trophic Niche</strong> are categorical while the rest are numeric.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://raw.githubusercontent.com/difiore/ada-datasets/refs/heads/main/AVONETdataset1.csv"</span>, <span class="at">col_names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Species1,Family1, Order1, Beak.Width, Beak.Depth, Beak.Length_Culmen, Tarsus.Length, Wing.Length, Tail.Length, Mass, Habitat, Migration, Trophic.Level,Trophic.Niche, Primary.Lifestyle, Min.Latitude,Max.Latitude,Centroid.Latitude,Range.Size) </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Migration =</span> <span class="fu">as.factor</span>(Migration)) <span class="co">#winnowing the dataset and changing migration into a factor</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">skim</span>(d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I also transformed <code>Migration</code> into a factor during this stage through <code>as.factor()</code> because it was more convenient to combine these into a single piped line of code.</p>
+<section id="step-one" class="level3">
+<h3 class="anchored" data-anchor-id="step-one">Step One</h3>
+<p>Starting off, I used <code>ggplot()</code> to draft up two quick boxplots to visualize how mass interacted with different kinds of trophic level and migration type. Visually, this immediately distinguished scavengers as a trophic level with much higher average mass than other levels; however, further analyses are needed to bring out the complexity of this comparison.</p>
+<p><img src="challenge1.11" class="img-fluid"></p>
+<p><img src="challenge1.12" class="img-fluid"></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>(p1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> d <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(Trophic.Level),</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> Trophic.Level, <span class="at">y =</span> <span class="fu">log</span>(Mass))) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>())<span class="co">#boxplot for log(Mass) by trophic level</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>(p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> d <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(Migration),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> Migration, <span class="at">y =</span> <span class="fu">log</span>(Mass))) <span class="sc">+</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>()) <span class="co">#boxplot for log(Mass) by migration</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-two" class="level3">
+<h3 class="anchored" data-anchor-id="step-two">Step Two</h3>
+<p>Next, I ran linear models through <code>lm()</code> on the same comparisons as above. Using <code>summary()</code> I found that both models produce significantly high F-statistics that have p-values low enough to disprove the null hypothesis.</p>
+<ul>
+<li><p>(m1) <strong>F-statistic</strong> =<em>78.42 on 3</em></p>
+<ul>
+<li><strong>p-value</strong> <em>&lt; 2.2e-16</em></li>
+</ul></li>
+<li><p>(m2) <strong>F-statistic =</strong> <em>144.5 on 2</em></p>
+<ul>
+<li><strong>p-value -</strong> <em>&lt; 2.2e-16</em></li>
+</ul></li>
+</ul>
+<p>Furthermore, when looking deeper at <code>m2</code>, we can see that the reference level is <code>1</code>, as it’s the only Migration class not mentioned in the summary. Taking that into account, birds who fall into group 1 have statistically different average masses than birds who fall into group 2 (p-value <strong>&lt;2.2e-16</strong>) or group 3 (p-value = <strong>3.02e-13</strong>).</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(m1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Mass) <span class="sc">~</span> Trophic.Level, <span class="at">data =</span> d)) </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>(m2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Mass) <span class="sc">~</span> Migration, <span class="at">data =</span> d)) </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m1) <span class="co">#the f-statistic is high enough to suggest that mass is associated trophic level #p-value of &lt;2.2e-16</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m2) <span class="do">##the f-statistic is high enough to suggest that mass is associated trophic level #p-value of &lt;2.2e-16</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#migration 1, the reference level, is significantly different from both migration2 (p &lt;2e-16) and migration3 (p 3.02e-13)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Releveling Migration to <code>2</code> and rerunning the model as a new object, we can see that in addition to the highly significant difference between the average mass of birds in group 1 and group 2 noted previously, there is highly significant difference between between the average mass of birds in group 2 and 3 (p-value = <strong>6.67e-09</strong>).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Migration =</span> <span class="fu">relevel</span>(Migration, <span class="at">ref =</span> <span class="st">"2"</span>)) <span class="co">#switching ref level</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>(m22 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Mass) <span class="sc">~</span> Migration, <span class="at">data =</span> d)) <span class="co">#comparing with new levels</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m22) <span class="co">#migration 2 is significantly different from both migration1 (p &lt;2e-16) and migration3 (p 6.67e-09)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-three" class="level3">
+<h3 class="anchored" data-anchor-id="step-three">Step Three</h3>
+<p>Rerunning <code>m2</code> as a <code>aov()</code> function allows me to then run <code>TukeyHSD()</code> to run post-hoc examinations on the results from <code>m2</code>. Specifically, I use a Tukey Honest Significant Differences Test to see which groups within migration differ significantly. Considering the test produces p-values of 0.00 for each group, it is safe to say that <strong>all groups have significantly different average mass</strong> (once logged to account for abnormal distributions).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>m2 <span class="ot">&lt;-</span> <span class="fu">aov</span>(<span class="fu">log</span>(Mass)<span class="sc">~</span> Migration, <span class="at">data =</span> d)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>posthoc <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(m2, <span class="at">which =</span> <span class="st">"Migration"</span>, <span class="at">ordered =</span> <span class="cn">TRUE</span>, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>posthoc  <span class="co"># all migration classes significantly differ</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-four" class="level3">
+<h3 class="anchored" data-anchor-id="step-four">Step Four</h3>
+<p>Finally, I load in the <code>:infer:</code> library to run permutations on the model so I can get a p-value for the observed F-statistic of <code>m1</code>.</p>
+<p>Breaking this down, I first create the <code>logMass</code> variable from the logged <code>Mass</code> variable in the original dataset. This way I can account for its abnormal distribution while also using <code>specify()</code> .</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(infer)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">logMass =</span> <span class="fu">log</span>(Mass)) <span class="co"># creating logMass so that specify can work</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Then I get the F-statistic by running <code>m1</code> as an <code>aov()</code> function then piping it to the <code>broom::tidy()</code> and <code>filter</code> functions to pull out the f-statistic for <code>"Trophic.Level"</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>original.F <span class="ot">&lt;-</span> <span class="fu">aov</span>(<span class="fu">log</span>(Mass) <span class="sc">~</span> Trophic.Level, <span class="at">data =</span> d) <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  broom<span class="sc">::</span><span class="fu">tidy</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">"Trophic.Level"</span>) <span class="co">#getting the f-statistic</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Saving that as an object, I use a piped sequence of <code>specify()</code>, <code>hypothesize()</code>, <code>generate()</code>, and <code>calculate()</code> to get 1000 permutations of the F-statistic under the assumption that a bird’s mass and trophic level are independent of each other. This made a tibble with 1000 different versions of an F-statistic from a test where any association between the variables had been broken.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>permuted.F <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">specify</span>(logMass <span class="sc">~</span> Trophic.Level) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hypothesize</span>(<span class="at">null =</span> <span class="st">"independence"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">generate</span>(<span class="at">reps =</span> <span class="dv">1000</span>, <span class="at">type =</span> <span class="st">"permute"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">calculate</span>(<span class="at">stat =</span> <span class="st">"F"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To get the final p-value, I used <code>get_p_value</code> by comparing the original F-statistic I drew out earlier in this step piped from the <code>permuted.F</code> tibble. This compared the changes of the observed F-statistic being found in the distribution created by the tibble. In this case, the <strong>p-value equals 0.00</strong> suggesting that our results would be highly unlikely to have been caused by independent variables</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>(p.value <span class="ot">&lt;-</span> permuted.F <span class="sc">|&gt;</span> <span class="fu">get_p_value</span>(<span class="at">obs_stat =</span> original.F<span class="sc">$</span>statistic, <span class="at">direction =</span> <span class="st">"greater"</span>)) <span class="co">#pvalue equals 0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="challenge-two" class="level2">
+<h2 class="anchored" data-anchor-id="challenge-two">Challenge Two</h2>
+<section id="step-one-1" class="level3">
+<h3 class="anchored" data-anchor-id="step-one-1">Step One</h3>
+<p>Creating <code>relative.beak.length</code> and <code>relative.tarsus.length</code> from the previously winnowed data set, I first ran two models using <code>lm()</code> to compare <code>log(Mass)</code> with <code>Beak.Length_Culmen</code> and <code>Tarsus.Length</code>. I then ran the <code>mutate()</code> function to add in the new variables as the <code>$residuals</code> from the two models I had already constructed</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mbeak <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Beak.Length_Culmen) <span class="sc">~</span> <span class="fu">log</span>(Mass), <span class="at">data =</span> d)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>mtarsus <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Tarsus.Length) <span class="sc">~</span> <span class="fu">log</span>(Mass), <span class="at">data =</span> d)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I then ran the <code>mutate()</code> function to add in the new variables as the <code>$residuals</code> from the two models I had already constructed</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">relative.beak.length =</span> mbeak<span class="sc">$</span>residuals) <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">relative.tarsus.length =</span> mtarsus<span class="sc">$</span>residuals) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-two-1" class="level3">
+<h3 class="anchored" data-anchor-id="step-two-1">Step Two</h3>
+<p>To visually asses these new variables I created a boxplot of <strong>Primary Lifestyle ~ Relative Tarsus Length</strong> and another boxplot of <strong>Trophic Niche ~ Relative Beak Length.</strong></p>
+<p><img src="challenge2.21" class="img-fluid"></p>
+<p><img src="challenge2.22" class="img-fluid"></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>(p01<span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> d <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(Primary.Lifestyle),</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>               <span class="fu">aes</span>(<span class="at">x =</span> Primary.Lifestyle, <span class="at">y =</span> relative.tarsus.length)) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>()) </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>(p02 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> d <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(Trophic.Niche),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>               <span class="fu">aes</span>(<span class="at">x =</span> Trophic.Niche, <span class="at">y =</span> relative.beak.length)) <span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-three-1" class="level3">
+<h3 class="anchored" data-anchor-id="step-three-1">Step Three</h3>
+<p>Before I could run the requested ANOVA tests using range size, I needed to check for the normality of the data. Using a simple histogram (from the <code>hist()</code> function), I could tell this wasn’t normally distributed and had to be logged when used in any future models.</p>
+<p><img src="challenge2.3" class="img-fluid"></p>
+<p>I then omitted any NAs from <code>Migration</code> and turned into a factor again, as I had reloaded the data set between Challenge 1 and 2.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>Range.Size) <span class="co">#super not-normal i need to log it to be normal</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>(d<span class="sc">$</span>Migration) <span class="sc">|&gt;</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Migration =</span> <span class="fu">as.factor</span>(Migration))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Running the new linear model comparing the log of range sizes by migration behavior returned an F-statistic of <strong>510.5 on 2</strong> and a p-value less than <strong>2.2e-16.</strong> This suggests that a bird’s range size is strongly associated with its migration behavior.</p>
+<p>Closer analysis shows that the reference level, birds that exhibit migration behavior 1, have significantly different range sizes than birds with either other migration behavior.</p>
+<ul>
+<li><p><strong>Group 1 v. Group 2 P-value &lt;</strong><em>2.2e-16</em></p></li>
+<li><p><strong>Group 1 v. Group 3 P-value &lt;</strong><em>2.2e-16</em></p></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>m3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Range.Size) <span class="sc">~</span> Migration, <span class="at">data =</span> d)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m3) <span class="co">#all migration are different than the ref level [migration1] and the base is significant</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co">#pvalue for m1 v. m2 [&lt;2e-16]</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#pvaulue for m1 v. m3 [&lt;2e-16]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Releveling shows that birds in Group 2 also have significantly different range sizes than birds in Group 3 [P-value = <strong>3.74e-10</strong>]</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">Migration =</span> <span class="fu">relevel</span>(Migration, <span class="at">ref =</span> <span class="st">"2"</span>)) <span class="co">#switching ref level</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>(m32 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(Mass) <span class="sc">~</span> Migration, <span class="at">data =</span> d)) <span class="co">#comparing with new levels</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m32) <span class="co">#pvalue for m2 v. m3 [3.74e-10] </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Doing post-hoc analysis on <code>m3</code> , in the same fashion as was done on <code>m2</code>, shows that each migration behavior group has significantly different range sizes from each other with p-values equal to <strong>0.00</strong>.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>m3 <span class="ot">&lt;-</span> <span class="fu">aov</span>(<span class="fu">log</span>(Range.Size)<span class="sc">~</span> Migration, <span class="at">data =</span> d)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>posthoc2 <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(m3, <span class="at">which =</span> <span class="st">"Migration"</span>, <span class="at">ordered =</span> <span class="cn">TRUE</span>, <span class="at">conf.level =</span> <span class="fl">0.95</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>posthoc2 <span class="co">#all significantly different with p-values at 0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-four-1" class="level3">
+<h3 class="anchored" data-anchor-id="step-four-1">Step Four</h3>
+<p>Winnowing the data set to only include Passeriformes, I then created new boxplots to show the relationships between <strong>Relative Beak Length</strong> and <strong>Primary Lifestlye</strong> as well as <strong>Trophic Level</strong></p>
+<p><img src="challenge2.41" class="img-fluid"></p>
+<p><img src="challenge2.42" class="img-fluid"></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Order1 <span class="sc">==</span> <span class="st">"Passeriformes"</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>(p03<span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> d <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(Primary.Lifestyle),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> Primary.Lifestyle, <span class="at">y =</span> relative.beak.length)) <span class="sc">+</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>()) </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>(p04 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> d <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(Trophic.Level),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>               <span class="fu">aes</span>(<span class="at">x =</span> Trophic.Level, <span class="at">y =</span> relative.beak.length)) <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_boxplot</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Running linear models with <code>lm()</code> on these same comparisons shows two high F-statistics with suggestive p-values.</p>
+<ul>
+<li><p><strong>m4 F-Statistic =</strong> <em>127.4 on 3</em></p>
+<ul>
+<li><strong>p-value &lt;</strong> <em>2.2e-16</em></li>
+</ul></li>
+<li><p><strong>m5 F-Statistic =</strong> <em>171.4 on 2</em></p>
+<ul>
+<li><strong>p-value &lt;</strong> <em>2.2e-16</em></li>
+</ul></li>
+</ul>
+<p>Comparing the variables within each comparison, it appears that the birds with <strong>Aerial</strong> lifestyles have significantly different beak lengths than birds with <strong>Generalist</strong>, <strong>Insessorial,</strong> or <strong>Terrestrial</strong> lifestyles. Similarly, <strong>Carnivorous</strong> birds have significantly different beak lengths than their <strong>Herbivorous</strong> counterparts and <strong>Omnivores</strong> have mostly different average beak lengths but not as significantly different.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>m4 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relative.beak.length <span class="sc">~</span> Primary.Lifestyle, <span class="at">data =</span> d)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m4) <span class="co">#very significant [&lt;2e-16]</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>m5 <span class="ot">&lt;-</span> <span class="fu">lm</span>(relative.beak.length <span class="sc">~</span> Trophic.Level, <span class="at">data =</span> d)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m5) <span class="do">##very significant [&lt;2e-16]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-five" class="level3">
+<h3 class="anchored" data-anchor-id="step-five">Step Five</h3>
+<p>Switching over to <code>aov()</code> for a better summary of the model, I compared <strong>Relative Beak Length</strong> to <strong>Primary Lifestyle</strong> AND <strong>Trophic Level</strong>. The results indicate that a bird’s trophic level does effect beak length with the bird’s lifestyle is taken into account and vice versa</p>
+<ul>
+<li><p>Trophic level’s affect on beak length accounting for lifestyle - <strong>p&lt;2e-16</strong></p></li>
+<li><p>Primary lifestyle’s affect on beak length accounting for trophic level - <strong>p&lt;2e-16</strong></p></li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>m6 <span class="ot">&lt;-</span> <span class="fu">aov</span>(d<span class="sc">$</span>relative.beak.length <span class="sc">~</span> d<span class="sc">$</span>Primary.Lifestyle <span class="sc">+</span> d<span class="sc">$</span>Trophic.Level) <span class="co">#switched to AOV to better illustrate general trends between the variables instead of the individual classifications in each variable</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m6) <span class="co">#it looks like trophic level does effect beak length when lifestyle is taken into account [&lt;2e-16] and vice versa [&lt;2e-16]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-six" class="level3">
+<h3 class="anchored" data-anchor-id="step-six">Step Six</h3>
+<p>Running the same model but adding an interaction term <code>:</code> between <code>Primary.Lifestyle</code> and <code>Trophic.Level</code> indicates a strong interaction between a bird’s primary lifestyle and its trophic level.</p>
+<ul>
+<li><strong>p-value for interaction</strong> &lt; <em>2e-16</em></li>
+</ul>
+<p>This follows conventional wisdom but this analysis provides statistical evidence of this assumption</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>m7 <span class="ot">&lt;-</span> <span class="fu">aov</span>(relative.beak.length <span class="sc">~</span> Primary.Lifestyle <span class="sc">+</span> Trophic.Level <span class="sc">+</span> Primary.Lifestyle<span class="sc">:</span>Trophic.Level, <span class="at">data =</span> d)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(m7) <span class="co">#there appears to be strong interaction between a bird's lifestyle and it's trophic level.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-seven" class="level3">
+<h3 class="anchored" data-anchor-id="step-seven">Step Seven</h3>
+<p>To better illustrate this interaction, I developed an interaction plot with the <code>interaction.plot()</code> function. This shows how a birds lifestyle affects relative beak length organized by trophic level.</p>
+<p><img src="challenge2.7" class="img-fluid"></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">interaction.plot</span>(<span class="at">x.factor =</span> d<span class="sc">$</span>Primary.Lifestyle, <span class="at">xlab =</span> <span class="st">"Primary Lifestyle"</span>, <span class="at">trace.factor =</span> d<span class="sc">$</span>Trophic.Level, <span class="at">trace.label =</span> <span class="st">"Trophic Level"</span>,</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">response =</span> d<span class="sc">$</span>relative.beak.length, <span class="at">fun =</span> base<span class="sc">::</span>mean, <span class="at">ylab =</span> <span class="st">"Relative Beak Length"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-eight" class="level3">
+<h3 class="anchored" data-anchor-id="step-eight">Step Eight</h3>
+<p>Returning to the original ANOVAs that we ran, I need to check to see if they follow our expectations of what an ANOVA should have. Specifically, I’m looking to see if each variable has roughly equal variance AND a normal distribution of observations and residuals.</p>
+<section id="looking-at-m4" class="level4">
+<h4 class="anchored" data-anchor-id="looking-at-m4">Looking at <code>m4</code></h4>
+<p>First, I compare the highest standard deviation in beak length grouped by lifestyle and divided it by the lowest standard deviation in beak length grouped by lifestyle. This returned a value equal to <strong>1.23</strong> which means that the variance between grouped beak lengths is roughly equal.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>PL <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Primary.Lifestyle) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">sdlength =</span> <span class="fu">sd</span>(relative.beak.length))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(PL<span class="sc">$</span>sdlength)<span class="sc">/</span><span class="fu">min</span>(PL<span class="sc">$</span>sdlength) <span class="co">#checking beak length for equal variance = all good (1.23)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Second, I look at a distribution of relative beak length observations and residuals grouped by birds with the Aerial lifestyle.</p>
+<p><img src="challenge2.81" class="img-fluid"></p>
+<p>Visually assessing these distributions, it’s clear the QQ plot is highly abnormal and the histogram of observations has a right skew. This likely effected our models.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Aerial"</span>], <span class="at">main =</span> <span class="st">"Aerial"</span>, <span class="at">xlab =</span> <span class="st">"Relative Beak Length"</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Aerial"</span>]) <span class="co">#not normally distributed</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>I then repeated this for Generalist, Insessorial, and Terrestial birds.</p>
+<p><img src="challenge2.82" class="img-fluid"></p>
+<p>While not as severe as the Aerial group, Generalist residuals are still odd and the histogram of observations has a noticeable right skew.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Generalist"</span>], <span class="at">main =</span> <span class="st">"Generalist"</span>, <span class="at">xlab =</span> <span class="st">"Relative Beak Length"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Generalist"</span>]) <span class="co">#mostly normal but a little skewed</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Insessorial distributions look largely normal with a moderate right skew and some peculiarities in residuals.</p>
+<p><img src="challenge2.83" class="img-fluid"></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Insessorial"</span>], <span class="at">main =</span> <span class="st">"Insessorial"</span>, <span class="at">xlab =</span> <span class="st">"Relative Beak Length"</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Insessorial"</span>]) <span class="co">#pretty normal</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Terrestrial group, much like the Generalists, have a noticeable right skew and some peculiarities in the residuals.</p>
+<p><img src="challenge2.84" class="img-fluid"></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Terrestrial"</span>], <span class="at">main =</span> <span class="st">"Terrestrial"</span>, <span class="at">xlab =</span> <span class="st">"Relative Beak Length"</span>)</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Primary.Lifestyle <span class="sc">==</span> <span class="st">"Terrestrial"</span>]) <span class="co">#mostly normal</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Since all four of these distributions had some abnormality to them, it’s likely that the ANOVAs run on <code>Primary.Lifestyle</code> were skewed in some way. However, as equal variance was found and most of abnormalities weren’t extreme, this skew may not have been significant enough to dramatically effect our results.</p>
+</section>
+<section id="looking-at-m5" class="level4">
+<h4 class="anchored" data-anchor-id="looking-at-m5">Looking at <code>m5</code></h4>
+<p>I then repeated the entire process for the Trophic Level analyses. This produced an equal variance score of <strong>1.33</strong> and the following distributions</p>
+<p><strong>Carnivores</strong></p>
+<p>The distribution of observations in the histogram is mostly normally distributed if sharply and with a minor right skew. It’s the residuals in the Q-Q plot that look strange, with some notable outliers at the tails.</p>
+<p><img src="challenge2.85" class="img-fluid"></p>
+<p><strong>Omnivores</strong></p>
+<p>The distribution of observations in the histogram has a noticably right skew that may have effected our model. The Q-Q plot is also a little strange at the tails but not entirely abnormal.</p>
+<p><img src="challenge8.6" class="img-fluid"></p>
+<p><strong>Herbivores</strong></p>
+<p>While the distribution has a noticeable right skew, it isn’t as severe as the Omnivores distribution and and the Q-Q plot is mostly normal with minimal oddities. Nonetheless this likely had an effect on any ANOVA run with this data.</p>
+<p><img src="challenge2.87" class="img-fluid"></p>
+<p>Similarly to <code>m4</code>, all of these distributions had some abnormality to them. As such, it’s likely that the ANOVAs run on <code>Trophic.Level</code> were skewed in some way. However, as equal variance was found and most of abnormalities weren’t extreme, this skew may not have been significant enough to dramatically effect our results.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>TL <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Trophic.Level) <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">sdlength =</span> <span class="fu">sd</span>(relative.beak.length))</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(TL<span class="sc">$</span>sdlength)<span class="sc">/</span><span class="fu">min</span>(TL<span class="sc">$</span>sdlength) <span class="co">#checking beak length for equal variance = all good (1.33)</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Carnivore"</span>], <span class="at">main =</span> <span class="st">"Carnivore"</span>, <span class="at">xlab =</span> <span class="st">"Relative Beak Length"</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Carnivore"</span>]) <span class="co">#largely normally distributed</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Omnivore"</span>], <span class="at">main =</span> <span class="st">"Omnivore"</span>, <span class="at">xlab =</span> <span class="st">"Relative Beak Length"</span>)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Omnivore"</span>]) <span class="co">#mostly normal</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Herbivore"</span>], <span class="at">main =</span> <span class="st">"Herbivore"</span>, <span class="at">xlab =</span> <span class="st">"Relative Beak Length"</span>)</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(d<span class="sc">$</span>relative.beak.length[d<span class="sc">$</span>Trophic.Level <span class="sc">==</span> <span class="st">"Herbivore"</span>]) <span class="co">#pretty normal with a little right skew</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section"></h3>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

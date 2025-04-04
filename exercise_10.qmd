@@ -268,32 +268,88 @@ interaction.plot(x.factor = d$Primary.Lifestyle, xlab = "Primary Lifestyle", tra
 
 ### Step Eight
 
-Returning to the original ANOVAs that we ran, I need to check to see if they follow our expectations of what an ANOVA should have.
+Returning to the original ANOVAs that we ran, I need to check to see if they follow our expectations of what an ANOVA should have. Specifically, I'm looking to see if each variable has roughly equal variance AND a normal distribution of observations and residuals.
 
 #### Looking at `m4`
 
-First, I compare the highest standard deviation in beak length grouped by lifestyle and divided it by the lowest
+First, I compare the highest standard deviation in beak length grouped by lifestyle and divided it by the lowest standard deviation in beak length grouped by lifestyle. This returned a value equal to **1.23** which means that the variance between grouped beak lengths is roughly equal.
 
 ``` R
 PL <- d |>
   group_by(Primary.Lifestyle) |>
   summarize(sdlength = sd(relative.beak.length))
 max(PL$sdlength)/min(PL$sdlength) #checking beak length for equal variance = all good (1.23)
+```
+
+Second, I look at a distribution of relative beak length observations and residuals grouped by birds with the Aerial lifestyle.
+
+![](challenge2.81)
+
+Visually assessing these distributions, it's clear the QQ plot is highly abnormal and the histogram of observations has a right skew. This likely effected our models.
+
+``` R
 par(mfrow = c(1, 2))
 hist(d$relative.beak.length[d$Primary.Lifestyle == "Aerial"], main = "Aerial", xlab = "Relative Beak Length")
 qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Aerial"]) #not normally distributed
+```
+
+I then repeated this for Generalist, Insessorial, and Terrestial birds.
+
+![](challenge2.82)
+
+While not as severe as the Aerial group, Generalist residuals are still odd and the histogram of observations has a noticeable right skew.
+
+``` R
 par(mfrow = c(1, 2))
 hist(d$relative.beak.length[d$Primary.Lifestyle == "Generalist"], main = "Generalist", xlab = "Relative Beak Length")
 qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Generalist"]) #mostly normal but a little skewed
+```
+
+Insessorial distributions look largely normal with a moderate right skew and some peculiarities in residuals.
+
+![](challenge2.83)
+
+``` R
 par(mfrow = c(1, 2))
 hist(d$relative.beak.length[d$Primary.Lifestyle == "Insessorial"], main = "Insessorial", xlab = "Relative Beak Length")
 qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Insessorial"]) #pretty normal
+```
+
+Terrestrial group, much like the Generalists, have a noticeable right skew and some peculiarities in the residuals.
+
+![](challenge2.84)
+
+``` R
 par(mfrow = c(1, 2))
 hist(d$relative.beak.length[d$Primary.Lifestyle == "Terrestrial"], main = "Terrestrial", xlab = "Relative Beak Length")
 qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Terrestrial"]) #mostly normal
 ```
 
+Since all four of these distributions had some abnormality to them, it's likely that the ANOVAs run on `Primary.Lifestyle` were skewed in some way. However, as equal variance was found and most of abnormalities weren't extreme, this skew may not have been significant enough to dramatically effect our results.
+
 #### Looking at `m5`
+
+I then repeated the entire process for the Trophic Level analyses. This produced an equal variance score of **1.33** and the following distributions
+
+**Carnivores**
+
+The distribution of observations in the histogram is mostly normally distributed if sharply and with a minor right skew. It's the residuals in the Q-Q plot that look strange, with some notable outliers at the tails.
+
+![](challenge2.85)
+
+**Omnivores**
+
+The distribution of observations in the histogram has a noticably right skew that may have effected our model. The Q-Q plot is also a little strange at the tails but not entirely abnormal.
+
+![](challenge8.6)
+
+**Herbivores**
+
+While the distribution has a noticeable right skew, it isn't as severe as the Omnivores distribution and and the Q-Q plot is mostly normal with minimal oddities. Nonetheless this likely had an effect on any ANOVA run with this data.
+
+![](challenge2.87)
+
+Similarly to `m4`, all of these distributions had some abnormality to them. As such, it's likely that the ANOVAs run on `Trophic.Level` were skewed in some way. However, as equal variance was found and most of abnormalities weren't extreme, this skew may not have been significant enough to dramatically effect our results.
 
 ``` R
 TL <- d |>

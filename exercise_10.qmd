@@ -8,7 +8,7 @@ editor: visual
 
 Prior to starting this challenge, I loaded in the data set, winnowed it to the variables outlined in the text, and did some preliminary analysis with `skim()`. I found that **Species1, Family1, Order1, Habitat, Trophic.Level,** and **Trophic Niche** are categorical while the rest are numeric.
 
-``` R
+``` r
 d <- read_csv("https://raw.githubusercontent.com/difiore/ada-datasets/refs/heads/main/AVONETdataset1.csv", col_names = TRUE)
 d <- d |>
   select(Species1,Family1, Order1, Beak.Width, Beak.Depth, Beak.Length_Culmen, Tarsus.Length, Wing.Length, Tail.Length, Mass, Habitat, Migration, Trophic.Level,Trophic.Niche, Primary.Lifestyle, Min.Latitude,Max.Latitude,Centroid.Latitude,Range.Size) 
@@ -26,7 +26,7 @@ Starting off, I used `ggplot()` to draft up two quick boxplots to visualize how 
 
 ![](challenge1.12)
 
-``` R
+``` r
 (p1 <- ggplot(data = d |> drop_na(Trophic.Level),
               aes(x = Trophic.Level, y = log(Mass))) +
     geom_boxplot())#boxplot for log(Mass) by trophic level
@@ -49,7 +49,7 @@ Next, I ran linear models through `lm()` on the same comparisons as above. Using
 
 Furthermore, when looking deeper at `m2`, we can see that the reference level is `1`, as it's the only Migration class not mentioned in the summary. Taking that into account, birds who fall into group 1 have statistically different average masses than birds who fall into group 2 (p-value **\<2.2e-16**) or group 3 (p-value = **3.02e-13**).
 
-``` R
+``` r
 (m1 <- lm(log(Mass) ~ Trophic.Level, data = d)) 
 (m2 <- lm(log(Mass) ~ Migration, data = d)) 
 summary(m1) #the f-statistic is high enough to suggest that mass is associated trophic level #p-value of <2.2e-16
@@ -59,7 +59,7 @@ summary(m2) ##the f-statistic is high enough to suggest that mass is associated 
 
 Releveling Migration to `2` and rerunning the model as a new object, we can see that in addition to the highly significant difference between the average mass of birds in group 1 and group 2 noted previously, there is highly significant difference between between the average mass of birds in group 2 and 3 (p-value = **6.67e-09**).
 
-``` R
+``` r
 d <- d |> mutate(Migration = relevel(Migration, ref = "2")) #switching ref level
 (m22 <- lm(log(Mass) ~ Migration, data = d)) #comparing with new levels
 summary(m22) #migration 2 is significantly different from both migration1 (p <2e-16) and migration3 (p 6.67e-09)
@@ -69,7 +69,7 @@ summary(m22) #migration 2 is significantly different from both migration1 (p <2e
 
 Rerunning `m2` as a `aov()` function allows me to then run `TukeyHSD()` to run post-hoc examinations on the results from `m2`. Specifically, I use a Tukey Honest Significant Differences Test to see which groups within migration differ significantly. Considering the test produces p-values of 0.00 for each group, it is safe to say that **all groups have significantly different average mass** (once logged to account for abnormal distributions).
 
-``` R
+``` r
 m2 <- aov(log(Mass)~ Migration, data = d)
 posthoc <- TukeyHSD(m2, which = "Migration", ordered = TRUE, conf.level = 0.95)
 posthoc  # all migration classes significantly differ
@@ -81,14 +81,14 @@ Finally, I load in the `:infer:` library to run permutations on the model so I c
 
 Breaking this down, I first create the `logMass` variable from the logged `Mass` variable in the original dataset. This way I can account for its abnormal distribution while also using `specify()` .
 
-``` R
+``` r
 library(infer)
 d <- d |> mutate(logMass = log(Mass)) # creating logMass so that specify can work
 ```
 
 Then I get the F-statistic by running `m1` as an `aov()` function then piping it to the `broom::tidy()` and `filter` functions to pull out the f-statistic for `"Trophic.Level"`.
 
-``` R
+``` r
 original.F <- aov(log(Mass) ~ Trophic.Level, data = d) |>
   broom::tidy() |>
   filter(term == "Trophic.Level") #getting the f-statistic
@@ -96,7 +96,7 @@ original.F <- aov(log(Mass) ~ Trophic.Level, data = d) |>
 
 Saving that as an object, I use a piped sequence of `specify()`, `hypothesize()`, `generate()`, and `calculate()` to get 1000 permutations of the F-statistic under the assumption that a bird's mass and trophic level are independent of each other. This made a tibble with 1000 different versions of an F-statistic from a test where any association between the variables had been broken.
 
-``` R
+``` r
 permuted.F <- d |>
   specify(logMass ~ Trophic.Level) |>
   hypothesize(null = "independence") |>
@@ -106,7 +106,7 @@ permuted.F <- d |>
 
 To get the final p-value, I used `get_p_value` by comparing the original F-statistic I drew out earlier in this step piped from the `permuted.F` tibble. This compared the changes of the observed F-statistic being found in the distribution created by the tibble. In this case, the **p-value equals 0.00** suggesting that our results would be highly unlikely to have been caused by independent variables
 
-``` R
+``` r
 (p.value <- permuted.F |> get_p_value(obs_stat = original.F$statistic, direction = "greater")) #pvalue equals 0
 ```
 
@@ -116,14 +116,14 @@ To get the final p-value, I used `get_p_value` by comparing the original F-stati
 
 Creating `relative.beak.length` and `relative.tarsus.length` from the previously winnowed data set, I first ran two models using `lm()` to compare `log(Mass)` with `Beak.Length_Culmen` and `Tarsus.Length`. I then ran the `mutate()` function to add in the new variables as the `$residuals` from the two models I had already constructed
 
-``` R
+``` r
 mbeak <- lm(log(Beak.Length_Culmen) ~ log(Mass), data = d)
 mtarsus <- lm(log(Tarsus.Length) ~ log(Mass), data = d)
 ```
 
 I then ran the `mutate()` function to add in the new variables as the `$residuals` from the two models I had already constructed
 
-``` R
+``` r
 d <- d |> mutate(relative.beak.length = mbeak$residuals) |> 
   mutate(relative.tarsus.length = mtarsus$residuals) 
 ```
@@ -136,7 +136,7 @@ To visually asses these new variables I created a boxplot of **Primary Lifestyle
 
 ![](challenge2.22)
 
-``` R
+``` r
 (p01<- ggplot(data = d |> drop_na(Primary.Lifestyle),
                aes(x = Primary.Lifestyle, y = relative.tarsus.length)) +
     geom_boxplot()) 
@@ -153,7 +153,7 @@ Before I could run the requested ANOVA tests using range size, I needed to check
 
 I then omitted any NAs from `Migration` and turned into a factor again, as I had reloaded the data set between Challenge 1 and 2.
 
-``` R
+``` r
 hist(d$Range.Size) #super not-normal i need to log it to be normal
 d <- d |>
   na.omit(d$Migration) |>
@@ -168,7 +168,7 @@ Closer analysis shows that the reference level, birds that exhibit migration beh
 
 -   **Group 1 v. Group 3 P-value \<***2.2e-16*
 
-``` R
+``` r
 m3 <- lm(log(Range.Size) ~ Migration, data = d)
 summary(m3) #all migration are different than the ref level [migration1] and the base is significant
 #pvalue for m1 v. m2 [<2e-16]
@@ -177,7 +177,7 @@ summary(m3) #all migration are different than the ref level [migration1] and the
 
 Releveling shows that birds in Group 2 also have significantly different range sizes than birds in Group 3 \[P-value = **3.74e-10**\]
 
-``` R
+``` r
 d <- d |> mutate(Migration = relevel(Migration, ref = "2")) #switching ref level
 (m32 <- lm(log(Mass) ~ Migration, data = d)) #comparing with new levels
 summary(m32) #pvalue for m2 v. m3 [3.74e-10] 
@@ -185,7 +185,7 @@ summary(m32) #pvalue for m2 v. m3 [3.74e-10]
 
 Doing post-hoc analysis on `m3` , in the same fashion as was done on `m2`, shows that each migration behavior group has significantly different range sizes from each other with p-values equal to **0.00**.
 
-``` R
+``` r
 m3 <- aov(log(Range.Size)~ Migration, data = d)
 posthoc2 <- TukeyHSD(m3, which = "Migration", ordered = TRUE, conf.level = 0.95)
 posthoc2 #all significantly different with p-values at 0
@@ -199,7 +199,7 @@ Winnowing the data set to only include Passeriformes, I then created new boxplot
 
 ![](challenge2.42)
 
-``` R
+``` r
 d <- d |>
   filter(Order1 == "Passeriformes")
 (p03<- ggplot(data = d |> drop_na(Primary.Lifestyle),
@@ -222,7 +222,7 @@ Running linear models with `lm()` on these same comparisons shows two high F-sta
 
 Comparing the variables within each comparison, it appears that the birds with **Aerial** lifestyles have significantly different beak lengths than birds with **Generalist**, **Insessorial,** or **Terrestrial** lifestyles. Similarly, **Carnivorous** birds have significantly different beak lengths than their **Herbivorous** counterparts and **Omnivores** have mostly different average beak lengths but not as significantly different.
 
-``` R
+``` r
 m4 <- lm(relative.beak.length ~ Primary.Lifestyle, data = d)
 summary(m4) #very significant [<2e-16]
 m5 <- lm(relative.beak.length ~ Trophic.Level, data = d)
@@ -237,7 +237,7 @@ Switching over to `aov()` for a better summary of the model, I compared **Relati
 
 -   Primary lifestyle's affect on beak length accounting for trophic level - **p\<2e-16**
 
-``` R
+``` r
 m6 <- aov(d$relative.beak.length ~ d$Primary.Lifestyle + d$Trophic.Level) #switched to AOV to better illustrate general trends between the variables instead of the individual classifications in each variable
 summary(m6) #it looks like trophic level does effect beak length when lifestyle is taken into account [<2e-16] and vice versa [<2e-16]
 ```
@@ -250,7 +250,7 @@ Running the same model but adding an interaction term `:` between `Primary.Lifes
 
 This follows conventional wisdom but this analysis provides statistical evidence of this assumption
 
-``` R
+``` r
 m7 <- aov(relative.beak.length ~ Primary.Lifestyle + Trophic.Level + Primary.Lifestyle:Trophic.Level, data = d)
 summary(m7) #there appears to be strong interaction between a bird's lifestyle and it's trophic level.
 ```
@@ -261,7 +261,7 @@ To better illustrate this interaction, I developed an interaction plot with the 
 
 ![](challenge2.7)
 
-``` R
+``` r
 interaction.plot(x.factor = d$Primary.Lifestyle, xlab = "Primary Lifestyle", trace.factor = d$Trophic.Level, trace.label = "Trophic Level",
                  response = d$relative.beak.length, fun = base::mean, ylab = "Relative Beak Length")
 ```
@@ -274,7 +274,7 @@ Returning to the original ANOVAs that we ran, I need to check to see if they fol
 
 First, I compare the highest standard deviation in beak length grouped by lifestyle and divided it by the lowest standard deviation in beak length grouped by lifestyle. This returned a value equal to **1.23** which means that the variance between grouped beak lengths is roughly equal.
 
-``` R
+``` r
 PL <- d |>
   group_by(Primary.Lifestyle) |>
   summarize(sdlength = sd(relative.beak.length))
@@ -287,7 +287,7 @@ Second, I look at a distribution of relative beak length observations and residu
 
 Visually assessing these distributions, it's clear the QQ plot is highly abnormal and the histogram of observations has a right skew. This likely effected our models.
 
-``` R
+``` r
 par(mfrow = c(1, 2))
 hist(d$relative.beak.length[d$Primary.Lifestyle == "Aerial"], main = "Aerial", xlab = "Relative Beak Length")
 qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Aerial"]) #not normally distributed
@@ -299,7 +299,7 @@ I then repeated this for Generalist, Insessorial, and Terrestial birds.
 
 While not as severe as the Aerial group, Generalist residuals are still odd and the histogram of observations has a noticeable right skew.
 
-``` R
+``` r
 par(mfrow = c(1, 2))
 hist(d$relative.beak.length[d$Primary.Lifestyle == "Generalist"], main = "Generalist", xlab = "Relative Beak Length")
 qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Generalist"]) #mostly normal but a little skewed
@@ -309,7 +309,7 @@ Insessorial distributions look largely normal with a moderate right skew and som
 
 ![](challenge2.83)
 
-``` R
+``` r
 par(mfrow = c(1, 2))
 hist(d$relative.beak.length[d$Primary.Lifestyle == "Insessorial"], main = "Insessorial", xlab = "Relative Beak Length")
 qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Insessorial"]) #pretty normal
@@ -319,7 +319,7 @@ Terrestrial group, much like the Generalists, have a noticeable right skew and s
 
 ![](challenge2.84)
 
-``` R
+``` r
 par(mfrow = c(1, 2))
 hist(d$relative.beak.length[d$Primary.Lifestyle == "Terrestrial"], main = "Terrestrial", xlab = "Relative Beak Length")
 qqnorm(d$relative.beak.length[d$Primary.Lifestyle == "Terrestrial"]) #mostly normal
@@ -351,7 +351,7 @@ While the distribution has a noticeable right skew, it isn't as severe as the Om
 
 Similarly to `m4`, all of these distributions had some abnormality to them. As such, it's likely that the ANOVAs run on `Trophic.Level` were skewed in some way. However, as equal variance was found and most of abnormalities weren't extreme, this skew may not have been significant enough to dramatically effect our results.
 
-``` R
+``` r
 TL <- d |>
   group_by(Trophic.Level) |>
   summarize(sdlength = sd(relative.beak.length))
